@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Speller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 1rem;
+            font-weight: bold;
+            color: #28a745;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Currency Speller</h1>
+        <input type="number" id="numberInput" placeholder="Enter a number">
+        <select id="currencySelect">
+            <option value="rupees">Indian Rupees</option>
+            <option value="dollars">US Dollars</option>
+        </select>
+        <button onclick="spellCurrency()">Spell It</button>
+        <div id="result"></div>
+    </div>
 
+    <script>
+        function twoDigits(test) {
+            const teens = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ",
+                           "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "];
+            const matures = ["", "", "twenty ", "thirty ", "forty ", "fifty ", "sixty ", "seventy ", "eighty ", "ninety "];
+            
+            if (test > 19) {
+                return matures[Math.floor(test / 10)] + teens[test % 10];
+            } else {
+                return teens[test];
+            }
+        }
+
+        function spellRupees(num) {
+            const words = [];
+            words.push("₨.");
+            words.push(twoDigits(Number(num % 100n)));
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 10n)) + "hundred and ");
+            num = num / 10n;
+            words.push(twoDigits(Number(num % 100n)) + "thousand ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 100n)) + "lakh ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 100n)) + "crore ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 100n)) + "arab ");
+
+            return words.reverse().reduce((acc, word) => {
+                if (["hundred and ", "thousand ", "lakh ", "crore ", "arab "].includes(word)) {
+                    return acc;
+                }
+                return acc + word;
+            }, "");
+        }
+
+        function spellDollars(num) {
+            const words = [];
+            words.push("$");
+            words.push(twoDigits(Number(num % 100n)));
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 10n)) + "hundred and ");
+            num = num / 10n;
+            words.push(twoDigits(Number(num % 100n)) + "thousand ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 10n)) + "hundred ");
+            num = num / 10n;
+            words.push(twoDigits(Number(num % 100n)) + "million ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 10n)) + "hundred ");
+            num = num / 10n;
+            words.push(twoDigits(Number(num % 100n)) + "billion ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 10n)) + "hundred ");
+            num = num / 10n;
+            words.push(twoDigits(Number(num % 100n)) + "trillion ");
+            num = num / 100n;
+            words.push(twoDigits(Number(num % 10n)) + "hundred ");
+            num = num / 10n;
+
+            return words.reverse().reduce((acc, word) => {
+                if (["hundred and ", "thousand ", "million ", "billion ", "trillion ", "hundred "].includes(word)) {
+                    return acc;
+                }
+                return acc + word;
+            }, "");
+        }
+
+        function spellCurrency() {
+            const input = document.getElementById('numberInput');
+            const result = document.getElementById('result');
+            const currencySelect = document.getElementById('currencySelect');
+            let num = BigInt(input.value);
+
+            let spelledOut;
+            if (currencySelect.value === 'rupees') {
+                spelledOut = spellRupees(num);
+            } else {
+                spelledOut = spellDollars(num);
+            }
+
+            result.textContent = spelledOut.trim();
+        }
+    </script>
+</body>
+</html>
